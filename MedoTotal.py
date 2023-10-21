@@ -183,3 +183,5 @@ class MedoTotal(Problem):
     
     def minimal_h(self,node):
         return node.state.tempo
+    
+

@@ -28,7 +28,7 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
             return
 
 
-        node = stack.popleft()
+        node = stack.pop()
         state = node.state
         if len(stack) > max_mem:
             max_mem = len(stack)
@@ -61,16 +61,19 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
                 if beststate is not None and node.path_cost >= beststate.path_cost:
                     continue
             visited.add(state)
+
             acts = problem.actions(state)
+            l = len(acts)
             for i in range(len(acts)):
-                action = acts[i]
+                lmi = l - i - 1
+                action = acts[lmi]
 
                 res = problem.result(state, action)
                 child = Node(res, node, action, problem.path_cost(node.path_cost, state, action, res))
                 
                 if(beststate is not None and child.path_cost >= beststate.path_cost):
                     continue
-                stack.insert(i, child)
+                stack.append(child)
             continue  
             
             
@@ -93,9 +96,13 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
                 continue
             else:
                 print("Custo:", node.path_cost)
+
                 acts = problem.actions(state)
+                l = len(acts)
                 for i in range(len(acts)):
-                    action = acts[i]
+                    lmi = l - i - 1
+                    action = acts[lmi]
+                    
                     res = problem.result(state, action)
                     child = Node(res, node, action, problem.path_cost(node.path_cost, state, action, res))
                     stack.insert(i, child) 
@@ -112,11 +119,13 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
             continue
 
         acts = problem.actions(state)
-        for i in range(len(acts)):
-            action = acts[i]
+        l = len(acts)
+        for i in range(l):
+            lmi = l - i - 1
+            action = acts[lmi]
             res = problem.result(state, action)
             child = Node(res, node, action, problem.path_cost(node.path_cost, state, action, res))
-            stack.insert(i, child) 
+            stack.append(child) 
             visited.add(res)
 
         visited.add(state)

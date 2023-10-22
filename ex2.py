@@ -1,11 +1,12 @@
 from searchPlus import *
 from MedoTotal import *
+from collections import deque
 
 def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
     if not problem:
         return None
 
-    stack = []
+    stack = deque()
     visited = set()
     n1 = Node(problem.initial)
     stack.append(n1)
@@ -16,7 +17,7 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
     beststate = None
 
     while stack:
-        node = stack.pop(0)
+        node = stack.pop()
         state = node.state
         if len(stack) > max_mem:
             max_mem = len(stack)

@@ -1,8 +1,11 @@
 from searchPlus import *
 from MedoTotal import *
 from collections import deque
+import time
 
 def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
+    initTime = time.time()
+
     if not problem:
         return None
 
@@ -16,6 +19,15 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
     beststate = None
 
     while(stack):
+        t = time.time()
+        if t - initTime >= 5.7:
+            print("time: ",t-initTime)
+            print("max_mem: ", max_mem)
+            print("visitados: ", len(visited))
+            print("estados finais: ", len(estados_finais))
+            return
+
+
         node = stack.popleft()
         state = node.state
         if len(stack) > max_mem:
@@ -49,9 +61,14 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
                 if beststate is not None and node.path_cost >= beststate.path_cost:
                     continue
             visited.add(state)
-            for i, action in enumerate(problem.actions(state)):
-                child = Node(problem.result(state, action), node, action, problem.path_cost(node.path_cost, state, action, problem.result(state, action)))
-                if( beststate is not None and child.path_cost >= beststate.path_cost):
+            acts = problem.actions(state)
+            for i in range(len(acts)):
+                action = acts[i]
+
+                res = problem.result(state, action)
+                child = Node(res, node, action, problem.path_cost(node.path_cost, state, action, res))
+                
+                if(beststate is not None and child.path_cost >= beststate.path_cost):
                     continue
                 stack.insert(i, child)
             continue  
@@ -76,9 +93,12 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
                 continue
             else:
                 print("Custo:", node.path_cost)
-            for i, action in enumerate(problem.actions(state)):
-                child = Node(problem.result(state, action), node, action, problem.path_cost(node.path_cost, state, action, problem.result(state, action)))
-                stack.insert(i, child) 
+                acts = problem.actions(state)
+                for i in range(len(acts)):
+                    action = acts[i]
+                    res = problem.result(state, action)
+                    child = Node(res, node, action, problem.path_cost(node.path_cost, state, action, res))
+                    stack.insert(i, child) 
             continue
         
 
@@ -90,10 +110,15 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
             if beststate is None or node.path_cost < beststate.path_cost:
                 beststate = node
             continue
-        for i, action in enumerate(problem.actions(state)):
-            child = Node(problem.result(state, action), node, action, problem.path_cost(node.path_cost, state, action, problem.result(state, action)))
-            stack.insert(i, child)
-            visited.add(problem.result(state, action))
+
+        acts = problem.actions(state)
+        for i in range(len(acts)):
+            action = acts[i]
+            res = problem.result(state, action)
+            child = Node(res, node, action, problem.path_cost(node.path_cost, state, action, res))
+            stack.insert(i, child) 
+            visited.add(res)
+
         visited.add(state)
 
     return beststate, max_mem, len(visited), len(estados_finais)

@@ -27,8 +27,6 @@ def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
         npc = node.path_cost
  
         if optimal:
-            if beststate is not None and node.path_cost >= beststate.path_cost:
-                continue
             if verbose:
                 print("---------------------")
                 print()

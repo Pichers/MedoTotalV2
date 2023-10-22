@@ -1,101 +1,81 @@
 from searchPlus import *
 from MedoTotal import *
 
-
 def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
     if not problem:
         return None
 
-    def recursive_search(pilha):
-
-        node = pilha.pop(0)
-        nonlocal max_mem, visited, estados_finais, beststate
-
-        state = node.state
-
-        if state not in visited:
-            if verbose:
-                print("---------------------")
-                print()
-                print(problem.display(state))
-                print("Custo: ", node.path_cost)
-
-            if problem.goal_test(state):
-                estados_finais.append(node)
-                if beststate is None or node.path_cost < beststate.path_cost:
-                    beststate = node
-                return
-
-            for action in problem.actions(state):
-                child_state = problem.result(state, action)
-                child = Node(child_state, node, action, problem.path_cost(node.path_cost, state, action, child_state))
-
-                if child.state not in visited:
-                    if(optimal):
-                        if(beststate != None and child.path_cost >= beststate.path_cost):
-                            print("AAAAAAAAAAAA")
-                            return
-                    pilha.insert(0, child)
-                    if len(pilha) > max_mem:
-                        max_mem = len(pilha)
-                    recursive_search(pilha)
-            visited.add(state)
-    pilha = []
+    stack = []
     visited = set()
     n1 = Node(problem.initial)
-    pilha.append(n1)
-
+    stack.append(n1)
+    visited.add(n1.state)
     max_mem = 0
 
     estados_finais = []
     beststate = None
 
-    recursive_search(pilha)
+    while stack:
+        node = stack.pop(0)
+        state = node.state
+        if len(stack) > max_mem:
+            max_mem = len(stack)
+            
+        
+        if optimal and beststate is not None and node.path_cost >= beststate.path_cost:
+                continue
+            
+        if verbose:
+            print("---------------------")
+            print()
+            print(problem.display(state))
+            
+        
+        # if state not in visited: 
+
+            
+        if problem.goal_test(state):
+            estados_finais.append(node)
+            if beststate is None or node.path_cost < beststate.path_cost:
+                beststate = node
+                if verbose:
+                    print("GGGGooooooallllll --------- com o custo:" ,node.path_cost)
+                    print("Di best goal até agora")
+                    visited.add(state)
+                    continue
+                    
+                    
+            visited.add(state)
+
+            if verbose:
+                if node in estados_finais:
+                    print("GGGGooooooallllll --------- com o custo:" ,node.path_cost)
+                else:
+                    print("Custo:", node.path_cost)
+            continue
+        
+        
+        
+        
+        if verbose:
+            print("Custo:", node.path_cost)
+            
+            
+            
+        for i, action in enumerate(problem.actions(state)):
+            child_state = problem.result(state, action)
+            child = Node(child_state, node, action, problem.path_cost(node.path_cost, state, action, child_state))
+            if optimal:
+                # if beststate is not None:
+                #     print("child.path_cost:", child.path_cost, "beststate.path_cost:", beststate.path_cost)
+                if beststate is not None and child.path_cost >= beststate.path_cost:
+                    continue
+            stack.insert(i, child)
+
+
+
+
+        visited.add(state)
+            
 
     return beststate, max_mem, len(visited), len(estados_finais)
-
-
-# def depth_first_tree_search_all_count(problem, optimal=False, verbose=False):
-#     if not problem:
-#         return None
-
-#     pilha = []
-#     visited = set()
-#     n1 = Node(problem.initial)
-#     pilha.append(n1)
-
-#     max_mem = 0
-
-#     estados_finais = []
-#     beststate = None
-
-#     while pilha:
-#         if len(pilha) > max_mem:
-#             max_mem = len(pilha)
-
-#         n = pilha.pop(0)
-#         state = n.state
-
-#         if state not in visited:
-#             if verbose:
-#                 # print("---------------------")
-#                 print()
-#                 # print(problem.display(state))
-#                 # print("Custo: ", n.path_cost)
-
-#             visited.add(state)
-
-#             if problem.goal_test(state):
-#                 estados_finais.append(n)
-#                 if beststate is None or n.path_cost < beststate.path_cost:
-#                     beststate = n
-#                 continue
-
-#             for action in problem.actions(state):
-#                 child_state = problem.result(state, action)
-#                 child = Node(child_state, parent=n, action=action)
-
-#                 if child not in visited:
-#                     pilha.insert(0, child)
-    
-#     return beststate, max_mem, visited, estados_finais

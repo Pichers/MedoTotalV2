@@ -17,8 +17,8 @@ def ida_star_graph_search_count(problem,f,verbose=False):
     initialNode = Node(initialState, None, None, 0)
 
     fronteira.append(initialNode)
-    beenThereDoneThat = list()
-    beenThereDoneThat.append(initialNode)
+    beenThereDoneThat = set()
+    beenThereDoneThat.add(initialState)
 
     size = 1
 
@@ -28,14 +28,9 @@ def ida_star_graph_search_count(problem,f,verbose=False):
     if verbose:
         print("------Cutoff at", cutoff)
 
-    it = time.time()
+    i = 0
 
     while fronteira:
-
-        if(time.time() - it> 7):
-            print("visitados", size)
-            print("time:",time.time() - it)
-            break
 
         node = fronteira.pop()
 
@@ -58,18 +53,22 @@ def ida_star_graph_search_count(problem,f,verbose=False):
                 break
 
             frontExtension = node.expand(problem)
+            frontExtension.reverse()
 
-            for n in reversed(frontExtension):
-                if n not in beenThereDoneThat:
+            for n in frontExtension:
+                if n.state not in beenThereDoneThat:
+
                     fronteira.append(n)
                     size += 1
-                    beenThereDoneThat.append(n)
+                    beenThereDoneThat.add(n.state)
+
+        i += 1
 
         if not fronteira and miniCut != infinity:
             fronteira.append(initialNode)
 
-            beenThereDoneThat = list()
-            beenThereDoneThat.append(initialNode)
+            beenThereDoneThat.clear()
+            beenThereDoneThat.add(initialState)
             size += 1
 
             cutoff = miniCut
